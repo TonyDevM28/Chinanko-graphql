@@ -5,7 +5,6 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 # --- Etapa 2: Ejecutar con Java 21 (Eclipse Temurin) ---
-# CAMBIO AQUÍ: Usamos eclipse-temurin en lugar de openjdk
 FROM eclipse-temurin:21-jdk
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
