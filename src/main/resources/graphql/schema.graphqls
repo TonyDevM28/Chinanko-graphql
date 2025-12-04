@@ -1,0 +1,67 @@
+scalar Date
+scalar BigDecimal
+
+# --- TIPOS (SALIDA) ---
+type Event {
+    idEvent: ID
+    nameEvent: String
+    description: String
+    timeBegin: Date
+    timeEnd: Date
+    price: Float
+    townId: Int
+    typeOfEventId: Int
+    stateOfEventId: Int
+    addresses: [AddressEvent]
+}
+
+type AddressEvent {
+    idAddressEvent: ID
+    street: String
+    exteriorNumber: String
+    interiorNumber: String
+    neighborhood: String
+    postalCode: String
+    latitude: BigDecimal
+    longitude: BigDecimal
+}
+
+# --- INPUTS (ENTRADA) ---
+input EventInput {
+    nameEvent: String!
+    description: String
+    timeBegin: Date!
+    timeEnd: Date!
+    price: Float
+    
+    townId: Int!
+    
+    # CORRECCIÓN: Nombres igual que en EventRequest.java
+    typeOfEventId: Int!     # Antes: typeEventId
+    stateOfEventId: Int!    # Antes: stateEventId
+    
+    addresses: [AddressEventInput]
+}
+
+input AddressEventInput {
+    street: String
+    exteriorNumber: String
+    interiorNumber: String
+    neighborhood: String
+    postalCode: String
+    latitude: BigDecimal
+    longitude: BigDecimal
+    # No pedimos eventId aquí, se infiere del padre
+}
+
+# --- OPERACIONES ---
+type Query {
+    eventById(id: ID!): Event
+    eventsByTown(townId: Int!, page: Int, size: Int): [Event]
+    eventsByPostalCode(postalCode: String!): [Event]
+}
+
+type Mutation {
+    createEvent(input: EventInput!): Event
+    updateEvent(id: ID!, input: EventInput!): Event
+}

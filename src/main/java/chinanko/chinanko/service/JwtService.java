@@ -8,7 +8,7 @@ import java.util.function.Function;
 import javax.crypto.SecretKey;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetails; // Puedes mantenerlo para compatibilidad si quieres
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
@@ -55,13 +55,23 @@ public class JwtService {
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getSignInKey())
+                .signWith(getSignInKey(), Jwts.SIG.HS256) // Ajuste para 0.12.5
                 .compact();
     }
 
+    // --- MÉTODO ORIGINAL (Mantener si otros servicios lo usan, o borrar si no) ---
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+    }
+
+    // --- NUEVO MÉTODO (PARA EL FILTRO SIN BASE DE DATOS) ---
+    // Este es el que soluciona tu error de compilación
+    public boolean isTokenValid(String token, String username) {
+        final String usernameFromToken = extractUsername(token);
+        // Validamos que el usuario del token coincida con el que extrajimos (redundante pero seguro)
+        // y que no haya expirado.
+        return (usernameFromToken.equals(username)) && !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {
