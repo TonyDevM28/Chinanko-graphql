@@ -3,15 +3,15 @@ package chinanko.chinanko.client;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-
+import chinanko.chinanko.configuration.FeignClientConfig; 
 import chinanko.chinanko.dto.UserDto;
 
-// name: Nombre del servicio (útil si usas Eureka luego)
-// url: La dirección directa del servicio Auth
-@FeignClient(name = "auth-service", url = "http://localhost:8082") 
+// CAMBIOS REALIZADOS:
+// 1. name = "chinanko-roles": Debe coincidir EXACTAMENTE con spring.application.name del servicio de Auth.
+// 2. Eliminé 'url': Así Feign le pregunta a Eureka "¿Dónde está chinanko-roles?" y Eureka le da la IP correcta.
+@FeignClient(name = "chinanko-roles", configuration = FeignClientConfig.class)
 public interface UserClient {
 
-    // Este método llamará a GET http://localhost:8080/api/v1/users/{id}
     @GetMapping("/api/v1/users/{id}")
-    UserDto getUserById(@PathVariable("id") Integer id);
+    UserDto getUserById(@PathVariable Integer id);
 }
